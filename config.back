@@ -1,0 +1,272 @@
+# ModulePath /usr/X11R6/lib/X11/fvwm
+
+###########################
+# General configurations. #
+###########################
+EdgeResistance   250 10
+EdgeScroll       0 0
+ClickTime        750
+DeskTopSize      3x3
+ColormapFocus    FollowsMouse
+# Window Button Locations [1 Title 42]
+Mouse 1 1 A Menu MenuWindowOps
+Mouse 1 4 A Iconify
+Mouse 1 2 A Maximize
+
+###################################
+# Window style and configurations. #
+###################################
+# HilightColor     #ffffff #1e1e1e
+# MenuStyle        #ffffff #1e1e1e #4dff4d fixed fvwm
+ # Style "*"        BorderWidth 8, HandleWidth 8, Height 50
+ # Style "*"        Color #ffffff/#2e2e2e
+ Style "*"        ClickToFocus
+ # Style "Fvwm*"    NoTitle, Sticky, WindowListSkip
+ 
+ # Window sizes
+ TitleStyle    AllInactive -- Raised
+ TitleStyle    AllActive -- Raised
+ ButtonStyle   All Simple -- UseTitleStyle
+ BorderStyle   Simple
+ TitleStyle    Centered -- Raised
+ ButtonStyle   All -- Raised
+
+ AddButtonStyle 1 Vector 3 23x58@0 77x58@0 77x42@0
+ AddButtonStyle 1 Vector 3 23x58@1 23x42@1 77x42@1
+
+ AddButtonStyle 2 Vector 3 21x79@0 79x79@0 79x21@0
+ AddButtonStyle 2 Vector 3 21x79@1 21x21@1 79x21@1
+
+ AddButtonStyle 4 Vector 3 42x58@0 58x58@0 58x42@0
+ AddButtonStyle 4 Vector 3 42x58@1 42x42@1 58x42@1
+
+ TitleStyle Height MinHeight 25
+
+# Colorsets
+
+############################
+# Initialization functions.#
+############################
+AddToFunc        InitFunction        "I"   Module   FvwmPager 0 0
++                "I" exec feh --bg-fill ~/Imagens/wallpapers/wallpaper-pc1-scaled.jpg
+AddToFunc        RestartFunction     "I"   Module   FvwmPager 0 0
++                "I" exec feh --bg-fill ~/Imagens/wallpapers/wallpaper-pc1-scaled.jpg
+
+##########
+# Pager. #
+##########
+*FvwmPagerFont        -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerBack        black
+*FvwmPagerFore        white
+*FvwmPagerHilight     #2d2d2d
+*FvwmPagerGeometry    100x100-1-1
+*FvwmPagerLabel 0     "Nezu"
+*FvwmPagerSmallFont   5x8
+
+##########
+# Menus. #
+##########
+AddToMenu RootMenu	"Nezu"         Title
++                   "XFCE Terminal"   exec xfce4-terminal
++                   "XTerm"           exec xterm
++                   ""                Nop
++                   "Microsoft Edge"  exec microsoft-edge
++                   "Firefox"         exec firefox
++                   "File manager"    exec thunar
++                   "Gimp"            exec gimp
++                   "VLC"             exec vlc
++                   "Transmission"    exec transmission-gtk
+# +                   "Volume"          Popup VolumeMenu
++                   ""                Nop
++                   "Restart FVWM"    Restart fvwm
++                   "Lock screen"     exec ~/.config/lock.sh
++                   "Logout"          FvwmForm QuitVerify
++                   "Reboot"          FvwmForm RebootVerify
++                   "Shutdown"        FvwmForm ShutdownVerify
+
+# Window operations for the centre mouse button.
+AddToMenu Global-Window-Ops    "Window Ops"       Title
++                              "Move"             Move-or-Raise2
++	                             "Resize"           Resize-or-Raise2
++                              "Raise"            Raise
++                              "Lower"            Lower
++                              "(De)Iconify"      Iconify
++                              "(Un)Stick"        Stick
++                              "(Un)Maximize"     maximize_func
++                              ""                 Nop
++                              "Delete"           Delete
++                              "Close"            Close
++                              "Destroy"          Destroy
++                              ""                 Nop
++                              "Refresh Screen"   Refresh
+
+# Window operations for the top left of every window.
+AddToMenu Window-Ops   "Move"           Move-or-Raise
++                      "Resize"         Resize-or-Raise
++                      "Raise/Lower"    RaiseLower
++                      "Iconify"        Iconify
++                      "(Un)Stick"      Stick
++                      ""               Nop
++                      "Delete"         Delete
++                      "Close"          Close
++                      "Destroy"        Destroy
+
+# # Volume menu.
+# AddToMenu VolumeMenu  "Volume Control"  Title
+# +                     "Volume 100%%"    exec mixerctl -q outputs.master=255
+# +                     "Volume  90%%"    exec mixerctl -q outputs.master=230
+# +                     "Volume  80%%"    exec mixerctl -q outputs.master=205
+# +                     "Volume  70%%"    exec mixerctl -q outputs.master=180
+# +                     "Volume  60%%"    exec mixerctl -q outputs.master=155
+# +                     "Volume  50%%"    exec mixerctl -q outputs.master=130
+# +                     "Volume  40%%"    exec mixerctl -q outputs.master=105
+# +                     "Volume  30%%"    exec mixerctl -q outputs.master=80
+# +                     "Volume  20%%"    exec mixerctl -q outputs.master=55
+# +                     "Volume  10%%"    exec mixerctl -q outputs.master=20
+# +                     "Volume   0%%"    exec mixerctl -q outputs.master=0
+
+#########################
+# Mouse configurations. #
+#########################
+#        Button	Context Modifi 	Function
+Mouse    1      R       A       Menu RootMenu Nop
+Mouse    2      R       A       Menu Global-Window-Ops Nop
+Mouse    3      R       A       WindowList
+
+# Title bar options (minimise, maximise, close).
+#        Button	Context Modifi 	Function
+Mouse    0      1       A       Menu Window-Ops Close
+Mouse    0      2       A       Close
+Mouse    0      4       A       Maximize-Func
+Mouse    0      6       A       Iconify
+
+# Button 1 configurations for frame/sides, icons, and on top.
+#        Button	Context Modifi 	Function
+Mouse    1      FS      A       Resize-or-Raise
+Mouse    1      I       A       Move-or-Iconify
+Mouse    1      T       A       Move-or-Raise
+
+# Button 2 configuration.
+Mouse 2  FST    A       Menu    Window-Ops Nop
+
+##############
+# Functions. #
+##############
+AddToFunc Move-or-Raise         "I" Raise
++                               "M" Move
++                               "D" Maximize
+
+AddToFunc Move-or-Raise2        "M" Raise
++                               "M" Move
++                               "D" Lower
+
+AddToFunc Maximize-Func         "C" Maximize    100 100
+
+AddToFunc Move-or-Iconify       "I" Raise
++                               "M" Move
++                               "D" Iconify
+
+AddToFunc Resize-or-Raise       "I" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc Resize-or-Raise2      "M" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc Iconify-and-Raise     "I" Iconify
++                               "I" Raise
+
+#######################
+# Keyboard shortcuts. #
+#######################
+
+# to do...
+
+########################################################
+# Confirmation pages for logout, reboot, and shutdown. #
+########################################################
+*QuitVerifyGrabServer
+*QuitVerifyWarpPointer
+*QuitVerifyCommand            Beep
+*QuitVerifyLine               center
+*QuitVerifyText               "Do you really want to logout?"
+*QuitVerifyLine               expand
+*QuitVerifyButton             quit        "Logout"  ^M
+*QuitVerifyCommand            Quit
+*QuitVerifyButton             quit        "Cancel"  ^[
+*QuitVerifyCommand            Nop
+Style "QuitVerify"            NoTitle, NoHandles, BorderWidth 3
+
+*RebootVerifyGrabServer
+*RebootVerifyWarpPointer
+*RebootVerifyCommand          Beep
+*RebootVerifyLine             center
+*RebootVerifyText             "Do you really want to reboot?"
+*RebootVerifyLine             expand
+*RebootVerifyButton           quit        "Reboot"  ^M
+*RebootVerifyCommand          exec /usr/bin/doas /sbin/reboot
+*RebootVerifyButton           quit        "Cancel"  ^[
+*RebootVerifyCommand          Nop
+Style "RebootVerify"          NoTitle, NoHandles, BorderWidth 3
+
+*ShutdownVerifyGrabServer
+*ShutdownVerifyWarpPointer
+*ShutdownVerifyCommand        Beep
+*ShutdownVerifyLine           center
+*ShutdownVerifyText           "Do you really want to shutdown?"
+*ShutdownVerifyLine           expand
+*ShutdownVerifyButton         quit        "Shutdown"  ^M
+*ShutdownVerifyCommand        exec /usr/bin/doas /sbin/shutdown -hp now
+*ShutdownVerifyButton         quit        "Cancel"  ^[
+*ShutdownVerifyCommand        Nop
+Style "ShutdownVerify"        NoTitle, NoHandles, BorderWidth 3
+
+ ########
+       # Pop up the window list in transient mode on button 3 press & hold
+
+       Mouse 3   R   A   Module FvwmWinList Transient
+
+       AddToFunc DeiconifyAndRaise
+       + I Iconify off
+       + I Raise
+
+       ########################## Window-Lister ###############################
+       *FvwmWinList: Back DarkOliveGreen
+       *FvwmWinList: Fore PaleGoldenRod
+       *FvwmWinList: Font -*-new century schoolbook-bold-r-*-*-*-120-*-*-*-*-*-*
+       *FvwmWinList: Action Click1 Function DeiconifyAndRaise
+       *FvwmWinList: Action Click2 Iconify
+       *FvwmWinList: Action Click3 Module FvwmIdent
+       *FvwmWinList: UseSkipList
+       *FvwmWinList: UseIconNames
+       *FvwmWinList: Geometry -50-85
+       *FvwmWinList: MinWidth 70
+       *FvwmWinList: MaxWidth 120
+       # I prefer the text centered
+       #*FvwmWinList: LeftJustify
+       # I like it anchored
+       #*FvwmWinList: NoAnchor
+       # A flat list in most recently focused order
+       #*FvwmWinList: FollowWindowList
+       #*FvwmWinList: BorderReliefWidth 0
+       # pretend to be a taskbar
+       *FvwmWinList: NoIconAction SendToModule FvwmAnimate animate
+
+
+DestroyFunc MyFocusFunc
+AddToFunc MyFocusFunc
++ I Iconify off
++ I FlipFocus
++ I Raise
+Key Tab A M Next (CurrentDesk, AcceptsFocus) MyFocusFunc
+Key Tab A SM Prev (CurrentDesk, AcceptsFocus) MyFocusFunc
+
+DestroyFunc PagerOnTop
+AddToFunc PagerOnTop
++ All ("FvwmPager") Layer 0 6
++ UpdateStyles
+DestroyFunc PagerCanBeHidden
+AddToFunc PagerCanBeHidden
++ All ("FvwmPager") Layer 0 4
++ UpdateStyles
