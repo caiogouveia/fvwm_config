@@ -10,15 +10,18 @@ SetEnv default_window_shade_steps 150
 SetEnv default_width 100
 SetEnv default_toolchest_width 141
 SetEnv default_desktop_size "2 1"
-SetEnv default_haiku_buttons_width 124
+SetEnv default_haiku_colorset 2
+SetEnv default_haiku_background_color #ff4444
+SetEnv default_haiku_buttons_width 150
 SetEnv default_haiku_buttons_height 768
 SetEnv default_haiku_buttons_font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=8"
 SetEnv default_term rxvt
-SetEnv default_wallpaper ~/Imagens/wallpapers/wifi.png
+SetEnv default_wallpaper ~/Imagens/wallpapers/current.png
 SetEnv haiku_buttons_y_position 0
-Windowfont "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Italic:size=10"
-# Windowfont "xft:Sans:Italic:Bold:size=10:antialias=True"
-DefaultFont "xft:Sans:Bold:size=10:antialias=True"
+SetEnv default_font "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
+Windowfont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
+DefaultFont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
+# "xft:Sans:Bold:size=10:antialias=True"
 
 #####
 # You can use EwmhBaseStruts to stop Maximised windows from obscuring TaskBars/ButtonBars
@@ -146,7 +149,7 @@ Style TheIconMan NoTitle, !Handles, BorderWidth 0, WindowShade, !Button 0, !Butt
 
  # Decors and overrides.
  Style *             Title, Handles, !MWMFunctions, NoDecorHint
- Style *             DepressableBorder, HandleWidth 8, BorderWidth 8
+ Style *             HandleWidth 7, BorderWidth 7
  Style "FvwmIconMan" NoTitle, Sticky, WindowListSkip, NoHandles, NeverFocus
  Style "FvwmPager"   NoTitle, Sticky, WindowListSkip, NoHandles
  Style "xload"       NoTitle, Sticky, WindowListSkip, NoHandles
@@ -221,7 +224,7 @@ DestroyModuleConfig FvwmAnimate: *
  # Leftmost button (rectangle) opens window ops menu.
  # Double click on this closes window.
  Mouse 0 1 A Menu Window-Ops2 Close
- Mouse 0 8 A WindowShade
+ # Mouse 0 8 A WindowShade
  Mouse 0 6 A SomeFunc
  Mouse 0 4 A Maximize 0 100
  Mouse 0 2 A Close
@@ -298,15 +301,16 @@ AddToFunc StartXclock
 # == Init (startup) function ==
  AddToFunc StartFunction 
  # + I StartXclock
- # + I Module FvwmPager ThePager
+ + I Module FvwmPager ThePager
+ + I Module FvwmIconMan TheIconMan
  + I Module FvwmAnimate
  + I Module FvwmEvent
  + I Module FvwmProxy
  + I Module FvwmEvent
- # + I Module FvwmIconMan TheIconMan
  + I Module FvwmButtons Toolchest
- + I Module FvwmButtons HaikuButtons
+ # + I Module FvwmButtons HaikuButtons
  + I setWallpaper
+ # + I Module FvwmBanner
 
 # == Window Handling Functions ==
 # Move and raise a window.
@@ -737,15 +741,15 @@ AddToFunc Launcher
 ColorSet 10 fg White, bg #b24d7a
 Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable, StaysOnTop
 *HaikuButtons: Columns 23
-*HaikuButtons: Font $[default_haiku_buttons_font]
-*HaikuButtons: Colorset 10
+*HaikuButtons: Font $[default_font]
+*HaikuButtons: Colorset $[default_haiku_colorset]
 *HaikuButtons: Frame 1
 *HaikuButtons: Padding 2 2
 *HaikuButtons: Rows 80
 *HaikuButtons: Geometry $[default_haiku_buttons_width]x$[default_haiku_buttons_height]-0+$[haiku_buttons_y_position]
-*HaikuButtons: (Size 1x80, Back #dedbde, Frame 1, Action (Mouse 1) `Nop`)
-*HaikuButtons: (Title (Side) ".: NEZU :.", Center, Back navy, Size 22x3, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (7x7, Icon "icons/debian.svg:28x28", Frame 0)
+*HaikuButtons: (Size 1x80, Back $[default_haiku_background_color], Frame 1, Action (Mouse 1) `Nop`)
+# *HaikuButtons: (Title (Side) ".: NEZU :.", Center, Back navy, Size 22x3, Action (Mouse 1) `Nop`)
+# *HaikuButtons: (Size 7x7, Icon "icons/debian.svg:28x28")
 *HaikuButtons: (Size 22x3, Back #dedbde, Swallow DateTime 'Module FvwmScript FvwmScript-DateTime', Frame 2)
 # *HaikuButtons: (Size 22x6, Swallow asclock, 'Exec asclock &')
 # *HaikuButtons: (Size 22x10, Swallow xclock, 'Exec xclock -brief -norender -geometry $[default_width]x100-0+0 -fg white -bg navy &')
@@ -790,21 +794,32 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
 *HaikuButtons: (Title (Side) " Quit Fvwm", Left, Back #dedbde, Icon plug.png, \
     Size 22x2, Action (Mouse 1) `Module FvwmScript FvwmScript-Quit`)
 *HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
+
+*HaikuButtons: (Size 1x16, Frame 0)
+*HaikuButtons: (Size 10x10, Swallow(UseOld) "cpumon" `Exec exec xosview -title cpumon +cpu`, Frame 0)
+*HaikuButtons: (Size 1x16, Frame 0)
+*HaikuButtons: (Size 10x2, Swallow(UseOld) "memmon" `Exec exec xosview -title memmon +mem`, Frame 0)
+*HaikuButtons: (Size 10x2, Swallow(UseOld) "netmon" `Exec exec xosview -title netmon +net`, Frame 0)
+# *HaikuButtons: (Size 22x2, Swallow cpumon `Exec exec xosview -title cpumon -mem -net +cpu -net -battery -disk -load -swap -page -wireless -labels`)
+# *HaikuButtons: (Size 22x2, Swallow batmon `Exec exec xosview -title batmon -mem -net -cpu -net +battery -disk -load -swap -page -wireless -labels`)
+# *HaikuButtons: (Size 22x2, Swallow memmon `Exec exec xosview -title memmon +mem -net -cpu -net -battery -disk -load -swap -page -wireless -labels`)
+# *HaikuButtons: (Size 22x2, Swallow wifimon `Exec exec xosview -title wifimon -mem -net -cpu -net -battery -disk -load -swap -page +wireless -labels`)
+# *HaikuButtons: (Size 2x4, Frame 0)
 # *HaikuButtons: (Size 11x5, Swallow wmcpuload, 'Exec exec wmcpuload -bw -lc rgb:5d/dd/ff')
 # *HaikuButtons: (Size 11x5, Swallow wmmemload, 'Exec exec wmmemload -bw -lc rgb:5d/dd/ff')
-*HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
+# *HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
 # *HaikuButtons: (Size 11x5, Swallow wmbattery, 'Exec exec wmclockmon -bw -lc rgb:5d/dd/ff')
 # *HaikuButtons: (Size 11x5, Swallow wmclockmon, 'Exec exec wmbattery -bw -lc rgb:5d/dd/ff')
-*HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
-*HaikuButtons: (Size 22x4, Swallow "FvwmPager" "FvwmPager ThePager 0 0")
-*HaikuButtons: (Size 22x1, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
-*HaikuButtons: (Size 22x2, Swallow peksystray, 'Exec exec peksystray')
+# *HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
+# *HaikuButtons: (Size 22x4, Swallow "FvwmPager" "FvwmPager ThePager 0 0")
+# *HaikuButtons: (Size 22x1, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
+# *HaikuButtons: (Size 22x2, Swallow peksystray, 'Exec exec peksystray')
 
 ######################################
 # The Toolchest
 # This is the actual Toolchest definition
 ######################################
-Style Toolchest Title, !Handles, BorderWidth 2, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable
+Style Toolchest Title, !Handles, BorderWidth 2, NoWindowShade, !Button 8, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable
 # Style FvwmButtons Title, !Handles, WindowShade, !Button 1, !Button 2, !Button 4, Sticky, !StickyStippledTitle, WindowListSkip, !Closable
 *Toolchest: Columns 1
 *Toolchest: Rows 6
@@ -814,7 +829,7 @@ Style Toolchest Title, !Handles, BorderWidth 2, WindowShade, !Button 1, !Button 
 *Toolchest: Font "xft:Arial:Regular:Italic:size=12"
 *Toolchest: Colorset 11
 *Toolchest: ActiveColorset 8
-*Toolchest: ButtonGeometry $[default_toolchest_width]x26+5+5
+*Toolchest: ButtonGeometry $[default_toolchest_width]x26+0+0
 *Toolchest: (Right, Title (Side, Left) "System ", Icon toolIcon.xpm, Action (Mouse 1) \
     	`Menu SysMenu rectangle $widthx$height+$left+$top  +$widthp-5p +1p`)
 *Toolchest: (Right, Icon toolIcon.xpm, Title (Side, Left) "Graphics ", Action (Mouse 1) \
@@ -936,12 +951,12 @@ AddToDecor CDEDecor
 # + AddButtonStyle 4 Vector 3 42x58@0 58x58@0 58x42@0
 # + AddButtonStyle 4 Vector 3 42x58@1 42x42@1 58x42@1
 
-+ TitleStyle Height MinHeight 20
- Style * Colorset 1, HilightColorset 2, \
-        BorderColorset 3, HilightBorderColorset 4, \
-        BorderWidth 5, HandleWidth 5, \
-        MWMBorder, DepressableBorder, \
-        MWMButtons, UseDecor CDEDecor
+# + TitleStyle Height MinHeight 20
+ # Style * Colorset 1, HilightColorset 2, \
+ #        BorderColorset 3, HilightBorderColorset 4, \
+ #        BorderWidth 5, HandleWidth 5, \
+ #        MWMBorder, DepressableBorder, \
+ #        MWMButtons, UseDecor CDEDecor
 
 # ==  WindowList ==
 ColorSet 56 fg Black, bg White
