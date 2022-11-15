@@ -5,7 +5,7 @@ SetEnv default_window_title_placement TitleAtTop
 SetEnv default_window_title_aligment
 SetEnv default_icon_size_width 90
 SetEnv default_icon_size_height 70
-SetEnv default_window_height 26
+SetEnv default_window_height 27
 SetEnv default_window_shade_steps 150
 SetEnv default_width 100
 SetEnv default_toolchest_width 141
@@ -15,7 +15,8 @@ SetEnv default_haiku_background_color #ff4444
 SetEnv default_haiku_buttons_width 150
 SetEnv default_haiku_buttons_height 768
 SetEnv default_haiku_buttons_font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=8"
-SetEnv default_term rxvt
+SetEnv default_term xfce4-terminal
+SetEnv default_rxvt rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb&
 SetEnv default_wallpaper ~/Imagens/wallpapers/current.png
 SetEnv haiku_buttons_y_position 0
 SetEnv default_font "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
@@ -30,7 +31,7 @@ DefaultFont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 # This Setting makes sure my ButtonBar on the left and taskbar along the bottom is always
 # visible.
 #################
-EwmhBaseStruts 0 $[default_haiku_buttons_width] 0 30
+EwmhBaseStruts $[default_haiku_buttons_width] 0 0 30
 
 # == Set ImagePath ==
 # This is the path for images, UI pixmaps etc.
@@ -49,6 +50,7 @@ Style "*" Icon generic.png
 Style rxvt Icon winterm.png
 Style Terminal Icon winterm.png
 Style WinTerm Icon winterm.png
+Style "Terminal*" Icon winterm.png
 Style MikMod Icon cdrec.png
 
 # == Geometry Window ==
@@ -84,22 +86,17 @@ Style ThePager Title, !Handles, BorderWidth 2, WindowShade, !Button 1, !Button 2
  *ThePager: font none
  *ThePager: Geometry 119x70-0+45
  *ThePager: label 0     "nezu"
- # don't draw window titles in the pager.
- *ThePager: windowlabelformat ""
+ # *ThePager: windowlabelformat ""
  *ThePager: SolidSeparators
 
 ############################
 # The Icon Man
 # Set up icon manager
 ############################
-Style TheIconMan NoTitle, !Handles, BorderWidth 0, WindowShade, !Button 0, !Button 0, !Button 0, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable
-# *TheIconMan: Font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=10"
-
-*TheIconMan: Font "xft:Sans:Bold:size=10:antialias=True"
+Style TheIconMan NoTitle, !Handles, !Borders, BorderWidth 0, WindowShade, !Button 0, !Button 0, !Button 0, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable
+*TheIconMan: Font "Shadow=1 1 SE:xft:Sans:Bold:size=10:antialias=True"
  *TheIconMan: ManagerGeometry 140x1+0-0
  *TheIconMan: ButtonGeometry 120x30
- # Show just the window title in buttons.
- # *FvwmIconMan: Format "%t"
  # Button Colors on the format ButtonKind State foreground background
  # See "man fvwmiconman" for more details.
  *TheIconMan: FocusButton Down #fff7e9 #718ba5
@@ -115,7 +112,9 @@ Style TheIconMan NoTitle, !Handles, BorderWidth 0, WindowShade, !Button 0, !Butt
  *TheIconMan: Sort Id
  # Show windows from all desktops at all times.
  *TheIconMan: Resolution Global
- *TheIconMan: DrawIcons True
+ *TheIconMan: DrawIcons always
+ *TheIconMan: Format "  %i  %t"
+ *TheIconMan: UseWinList 
 
  # == Window colors and styles ==
  # Menu colors are set in menu style below.
@@ -281,7 +280,7 @@ Mouse 0 4       A   Maximize
 Mouse 4 T       A   WheelToggleShade True
 Mouse 5 T       A   WheelToggleShade False
 Mouse 1 FS      A   Resize-or-Raise
-Mouse 1 T       A   Move-or-Raise
+# Mouse 1 T       A   Move-or-Raise
 Mouse 1 I       A   Move-or-Iconify
 # Mouse 2 I       A   Iconify
 Mouse 2 I       A   SomeFunc
@@ -300,7 +299,7 @@ AddToFunc StartXclock
 
 # == Init (startup) function ==
  AddToFunc StartFunction 
- # + I StartXclock
+ + I Module FvwmCommandS
  + I Module FvwmPager ThePager
  + I Module FvwmIconMan TheIconMan
  + I Module FvwmAnimate
@@ -308,9 +307,49 @@ AddToFunc StartXclock
  + I Module FvwmProxy
  + I Module FvwmEvent
  + I Module FvwmButtons Toolchest
- # + I Module FvwmButtons HaikuButtons
+ + I Module FvwmButtons HaikuButtons
  + I setWallpaper
- # + I Module FvwmBanner
+ + I StartXclock
+ + I Module FvwmBanner
+ + I Module FvwmAuto FvwmAutohide -menter FuncAutoEnter
+ + I Test (Init) StartHiddenConsole
+
+#####
+# Autohide console example: [4]http://dev.gentoo.org/~taviso/autohide_console.png
+##################
+DestroyFunc StartHiddenConsole
+AddToFunc StartHiddenConsole
++ I Exec exec rxvt +sb -geometry 144x8+0+0 -name HiddenConsole
++ I Wait HiddenConsole
++ I Autohide HiddenConsole 250 0 N
+
+DestroyFunc FuncAutoEnter
+AddToFunc FuncAutoEnter I Autohide HiddenConsole 250 500 N
+
+####
+# These functions modified from the functions provided in the fvwm FAQ.
+# [8]http://www.fvwm.org/documentation/faq/#7.17
+#################
+AddToFunc Autohide
++ I ThisWindow ($0) Deschedule $[w.id]
++ I TestRc (!Match) Deschedule -$[w.id]
++ I ThisWindow ($0) ThisWindow (shaded) AutohideShow $1 $3
++ I TestRc (!Match) All ($0, !shaded) AutohideHide $2 $3
+
+AddToFunc AutohideShow
++ I Schedule $0 -$[w.id] WindowShade $1 off
++ I Schedule $0 -$[w.id] Raise
++ I Schedule $0 -$[w.id] Deschedule $[w.id]
++ I Schedule $0 -$[w.id] Deschedule -$[w.id]
+
+AddToFunc AutohideHide
++ I Schedule $0 $[w.id] WindowShade $1 on
++ I Schedule $0 $[w.id] Deschedule $[w.id]
++ I Schedule $0 $[w.id] Deschedule -$[w.id]
+
+# AutoHiding Console
+Style HiddenConsole Sticky, WindowListSkip, Notitle, NoHandles
+Style HiddenConsole WindowShadeSteps 100
 
 # == Window Handling Functions ==
 # Move and raise a window.
@@ -327,11 +366,11 @@ AddToFunc StartXclock
 
 # # Maximize window on double-click in title bar.
 # # On single click, focus and allow moving it.
-# AddToFunc Maximize-or-Move
-# + D Maximize
-# + I Raise
-# + C Focus
-# + M Move
+AddToFunc Maximize-or-Move
++ D Maximize
++ I Raise
++ C Focus
++ M Move
 
 # # Raise and Focus window.
 # AddToFunc Raise-and-Focus
@@ -478,6 +517,8 @@ Key Down  A C4 Direction South (CurrentPage) WarpToWindow
 Key Left  A C4 Direction West  (CurrentPage) WarpToWindow
 Key Right A C4 Direction East  (CurrentPage) WarpToWindow
 
+Key S A S14 Exec gnome-screenshot -ac &
+
 # Windows key + page up/page down for volume.
 # Key Prior   A 4 Exec xvol up &
 # Key Next    A 4 Exec xvol down &
@@ -530,11 +571,10 @@ Key Escape A S4 Menu System-Menu
 
 # New terminal: Win + Enter.
 # Key Return A 4 Exec xterm -n "xterm" &
-Key Return A 4 Exec rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb&
+Key Return A 4 Exec $[default_term]
 
 # New terminal with tmux: Shift + Win + Enter.
-# Key Return A S4 Exec xterm -n "tmux xterm" -e tmux &
-Key Return A S4 Exec rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb -e tmux &
+Key Return A S4 Exec $[default_term] -e tmux &
 
 # == Define Menus ==
 
@@ -553,7 +593,7 @@ AddToMenu Window-Ops2
 # Root System Menu (Right click on root window, Win+Shift+Esc).
 AddToMenu System-Menu 
 +  "System"        Title
-+  "Lock Screen"   Exec i3lock &
++  "Lock Screen"   Exec xscreensaver-command --lock &
 +  ""              Nop
 +  "Resize"        Resize-or-Raise
 +  "Move"          Move-or-Raise
@@ -584,14 +624,11 @@ AddToMenu SuspendMenu "Sleep Mode?" Title
 # for launching applications. It will open sub menus defined below.
 AddToMenu RootMenu
 +  " Workspace Menu "  Title
-+ "Terminal" Exec rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb &
-+ "XFCE Terminal" Exec xfce4-terminal &
-+  "XTerm"             Exec winterm -fn -misc-fixed-medium-r-*-*-18-*-*-*-*-*-iso10646-1 &
-+  "Small XTerm"       Exec winterm -n "sm xterm" &
-+  "X-Large Xterm"     Exec winterm -n "xl xterm" -geometry 80x39 -fn -*-fixed-medium-*-*-*-24-*-*-*-*-*-*-1 &
++ "Terminal" Exec $[default_term] &
 +  ""                  Nop
 +  "Microsoft Edge"    Exec microsoft-edge &
 +  "Firefox"           Exec firefox &
++  ""                  Nop
 +  "File manager"    exec thunar &
 +  "Gimp"            exec gimp &
 +  "VLC"             exec vlc &
@@ -601,18 +638,11 @@ AddToMenu RootMenu
 +  " Games " Title
 +  "RetroArch"         Exec retroarch &
 +  ""                  Nop
-+  "Volume Mixer"      Exec xterm -e alsamixer --device pulse &
 +  "Audio Panel"       Exec pavucontrol &
 +  ""                  Nop
 +  "Graphics"          Popup GfxMenu
 +  "Audio/Video"       Popup MediaMenu
 +  "Applications"      Popup UtilsMenu
-
-# Submenus to Root Menu.
-# Various utilities and applications menu.
-AddToMenu UtilsMenu
-+  "XMag"       exec xmag -source 150x150 &
-+  "XFontSel"   exec xfontsel &
 
 # Graphics programs menu.
 AddToMenu GfxMenu
@@ -739,7 +769,7 @@ AddToFunc Launcher
 # This is the actual HaikuButtons definition
 ######################################
 ColorSet 10 fg White, bg #b24d7a
-Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable, StaysOnTop
+Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable
 *HaikuButtons: Columns 23
 *HaikuButtons: Font $[default_font]
 *HaikuButtons: Colorset $[default_haiku_colorset]
@@ -748,11 +778,9 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
 *HaikuButtons: Rows 80
 *HaikuButtons: Geometry $[default_haiku_buttons_width]x$[default_haiku_buttons_height]-0+$[haiku_buttons_y_position]
 *HaikuButtons: (Size 1x80, Back $[default_haiku_background_color], Frame 1, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (Title (Side) ".: NEZU :.", Center, Back navy, Size 22x3, Action (Mouse 1) `Nop`)
+*HaikuButtons: (Title (Side) ".: NEZU :.", Center, Back navy, Size 22x3, Action (Mouse 1) `Nop`)
 # *HaikuButtons: (Size 7x7, Icon "icons/debian.svg:28x28")
 *HaikuButtons: (Size 22x3, Back #dedbde, Swallow DateTime 'Module FvwmScript FvwmScript-DateTime', Frame 2)
-# *HaikuButtons: (Size 22x6, Swallow asclock, 'Exec asclock &')
-# *HaikuButtons: (Size 22x10, Swallow xclock, 'Exec xclock -brief -norender -geometry $[default_width]x100-0+0 -fg white -bg navy &')
 *HaikuButtons: (Title (Side) " Terminal", Left, Back #dedbde, Icon computer_x11.png, \
     Size 22x2, Action (Mouse 1) `Exec exec rxvt`)
 *HaikuButtons: (Title (Side) " File Manager", Left, Back #dedbde, Icon floppy_disk.png, \
@@ -768,11 +796,8 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
 *HaikuButtons: (Size 22x1, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
 *HaikuButtons: (Title (Side) " Calculator", Left, Back #dedbde, Icon calculator.png, \
     Size 22x2, Action (Mouse 1) `Exec exec xcalc`)
-# *HaikuButtons: (Title (Side) " Manual Page", Left, Back #dedbde, Icon book_help_paper.png, \
-    Size 22x2, Action (Mouse 1) `Exec exec xman`)
 *HaikuButtons: (Title (Side) " Run...", Left, Back #dedbde, Icon gears.png, \
     Size 22x2, Action (Mouse 1) `Exec exec rofi -show run`)
-# Size 22x2, Action (Mouse 1) `Exec exec xfce4-appfinder`)
 *HaikuButtons: (Size 22x1, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
 *HaikuButtons: (Title (Side) " Configure...", Left, Back #dedbde, Icon tool_wrench.png, \
     Size 22x2, Action (Mouse 1) `Module FvwmScript FvwmScript-ScreenSetup`)
@@ -793,36 +818,24 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
     Size 22x2, Action (Mouse 1) `Restart`)
 *HaikuButtons: (Title (Side) " Quit Fvwm", Left, Back #dedbde, Icon plug.png, \
     Size 22x2, Action (Mouse 1) `Module FvwmScript FvwmScript-Quit`)
-*HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
 
+*HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
 *HaikuButtons: (Size 1x16, Frame 0)
-*HaikuButtons: (Size 10x10, Swallow(UseOld) "cpumon" `Exec exec xosview -title cpumon +cpu`, Frame 0)
+*HaikuButtons: (Size 10x2, Swallow(UseOld) "cpumon" `Exec exec xosview -title cpumon +cpu`, Frame 0)
 *HaikuButtons: (Size 1x16, Frame 0)
 *HaikuButtons: (Size 10x2, Swallow(UseOld) "memmon" `Exec exec xosview -title memmon +mem`, Frame 0)
 *HaikuButtons: (Size 10x2, Swallow(UseOld) "netmon" `Exec exec xosview -title netmon +net`, Frame 0)
-# *HaikuButtons: (Size 22x2, Swallow cpumon `Exec exec xosview -title cpumon -mem -net +cpu -net -battery -disk -load -swap -page -wireless -labels`)
-# *HaikuButtons: (Size 22x2, Swallow batmon `Exec exec xosview -title batmon -mem -net -cpu -net +battery -disk -load -swap -page -wireless -labels`)
-# *HaikuButtons: (Size 22x2, Swallow memmon `Exec exec xosview -title memmon +mem -net -cpu -net -battery -disk -load -swap -page -wireless -labels`)
-# *HaikuButtons: (Size 22x2, Swallow wifimon `Exec exec xosview -title wifimon -mem -net -cpu -net -battery -disk -load -swap -page +wireless -labels`)
-# *HaikuButtons: (Size 2x4, Frame 0)
-# *HaikuButtons: (Size 11x5, Swallow wmcpuload, 'Exec exec wmcpuload -bw -lc rgb:5d/dd/ff')
-# *HaikuButtons: (Size 11x5, Swallow wmmemload, 'Exec exec wmmemload -bw -lc rgb:5d/dd/ff')
-# *HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (Size 11x5, Swallow wmbattery, 'Exec exec wmclockmon -bw -lc rgb:5d/dd/ff')
-# *HaikuButtons: (Size 11x5, Swallow wmclockmon, 'Exec exec wmbattery -bw -lc rgb:5d/dd/ff')
-# *HaikuButtons: (Size 22x2, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (Size 22x4, Swallow "FvwmPager" "FvwmPager ThePager 0 0")
-# *HaikuButtons: (Size 22x1, Frame 0, Back #c6c3c6, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (Size 22x2, Swallow peksystray, 'Exec exec peksystray')
+*HaikuButtons: (Size 10x2, Swallow(UseOld) "batmon" `Exec exec xosview -title batmon -mem -net -cpu -net +battery -disk -load -swap -page -wireless -labels`, Frame 0)
+
 
 ######################################
 # The Toolchest
 # This is the actual Toolchest definition
 ######################################
-Style Toolchest Title, !Handles, BorderWidth 2, NoWindowShade, !Button 8, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable
-# Style FvwmButtons Title, !Handles, WindowShade, !Button 1, !Button 2, !Button 4, Sticky, !StickyStippledTitle, WindowListSkip, !Closable
+Style Toolchest Title, !Handles, BorderWidth 2, NoWindowShade, !Button 8, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable, StaysOnTop
+# Style Toolchest Title, !Handles, WindowShade, !Button 1, !Button 2, !Button 4, Sticky, !StickyStippledTitle, WindowListSkip, !Closable
 *Toolchest: Columns 1
-*Toolchest: Rows 6
+*Toolchest: Rows 7
 *Toolchest: BoxSize smart
 *Toolchest: Padding 11 0
 *Toolchest: Frame 1
@@ -840,8 +853,10 @@ Style Toolchest Title, !Handles, BorderWidth 2, NoWindowShade, !Button 8, !Butto
     	`Menu SurfMenu rectangle $widthx$height+$left+$top  +$widthp-5p +1p`)
 *Toolchest: (Right, Title (Side, Left) "Music ", Icon toolIcon.xpm, Action (Mouse 1) \
     	`Menu MusicMenu rectangle $widthx$height+$left+$top  +$widthp-5p +1p`)
+*Toolchest: (Right, Title (Side, Left) "Screenshot ", Action (Mouse 1) \
+    	`exec gnome-screenshot -ac`)
 *Toolchest: (Right, Title (Side, Left) "Terminal ", Action (Mouse 1) \
-    	`exec rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb &`)
+    	`exec $[default_term]`)
 
 #### Sub-menus are defined here.
 #### These are also used in the classic fvwm root menu.
@@ -853,6 +868,7 @@ AddToMenu SysMenu
 + "Audio Panel "        exec pavucontrol &
 + "System Temp "        exec psensor &
 +	"" Nop
++  "Lock Screen"   Exec xscreensaver-command --lock &
 +	"Restart WM "		Restart fvwm2
 + "Exit X "		Popup QuitMenu #Quit
 
@@ -870,9 +886,9 @@ AddToMenu SurfMenu
 
 ## Various utilities and applications menu
 AddToMenu UtilsMenu
-+   "LeafPad "       exec leafpad &
-+   "GNumeric "       exec gnumeric &
-+   "Calendar "       exec orage &
++   "LibreOffice Write "       exec libreoffice --write &
++   "LibreOffice Calc "       exec libreoffice --calc &
++   "Gnome Calendar "       exec gnome-calendar &
 +   "Calculator "       exec xcalc &
 
 ## Graphics programs menu
@@ -967,10 +983,10 @@ MenuStyle WindowList MenuColorset 2, ActiveColorset 1, GreyedColorset 1, TitleCo
 MenuStyle WindowList Hilight3DOff, HilightBack, HilightTitleBack, SeparatorsLong
 MenuStyle WindowList TrianglesSolid, TrianglesUseFore
 MenuStyle WindowList ItemFormat "%|%3.1i%5.3l%5.3>%|"
-MenuStyle WindowList Font "xft:Sans:Bold:size=18:antialias=True"
+MenuStyle WindowList Font "xft:Sans:Bold:size=12:antialias=True"
 MenuStyle WindowList VerticalItemSpacing 4 4, VerticalTitleSpacing 4 4
 MenuStyle WindowList BorderWidth 10
-MenuStyle WindowList MaxLabelWidth 30
+MenuStyle WindowList LabelWidth 30
 
 # MenuStyle WindowList MenuColorset 2, HilightTitleBack
 # MenuStyle WindowList ActiveColorset 1
@@ -980,4 +996,38 @@ MenuStyle WindowList MaxLabelWidth 30
 # MenuStyle WindowList ItemFormat "%5.5|%5.5i%1.3l%2.3>%|"
 # MenuStyle WindowList ItemFormat "%|%3.1i%5.3l%5.3>%|"
 
+#
+# ==  Sensor Dock ==
+DestroyModuleConfig SensorDock: *
+*SensorDock: Geometry 120x235-5+5
+*SensorDock: Colorset 10
+*SensorDock: Rows 47
+*SensorDock: Columns 24
+*SensorDock: Font "xft:Sans:Bold:size=10:antialias=True"
+*SensorDock: Frame 0
+*SensorDock: (7x7, Icon "icons/debian.svg:28x28", Frame 0)
+*SensorDock: (17x7, Swallow DateTime 'Module FvwmScript $[FVWM_USERDIR]/scripts/DateTime', Frame 0)
+*SensorDock: (24x1, Frame 0)
+*SensorDock: (2x5, Frame 0)
+*SensorDock: (5x5, Id desk0, Title "0", Action (Mouse 1) GotoDesk 0 0, Colorset 11, ActiveColorset 12, Frame 0)
+*SensorDock: (5x5, Id desk1, Title "1", Action (Mouse 1) GotoDesk 0 1, Colorset 10, ActiveColorset 12, Frame 0)
+*SensorDock: (5x5, Id desk2, Title "2", Action (Mouse 1) GotoDesk 0 2, Colorset 10, ActiveColorset 12, Frame 0)
+*SensorDock: (5x5, Id desk3, Title "3", Action (Mouse 1) GotoDesk 0 3, Colorset 10, ActiveColorset 12, Frame 0)
+*SensorDock: (2x5, Frame 0)
+*SensorDock: (2x12, Frame 0)
+*SensorDock: (20x12, Swallow FvwmPager 'Module FvwmPager *', Frame 0)
+*SensorDock: (2x12, Frame 0)
+*SensorDock: (12x1, Frame 0)
+*SensorDock: (12x18, Swallow Sensors 'Module FvwmScript $[FVWM_USERDIR]/scripts/Sensors', Frame 2)
+*SensorDock: (1x16, Frame 0)
+*SensorDock: (10x10, Swallow(UseOld) "cpumon" `Exec exec xosview -title cpumon +cpu`, Frame 0)
+*SensorDock: (1x16, Frame 0)
+*SensorDock: (10x2, Swallow(UseOld) "memmon" `Exec exec xosview -title memmon +mem`, Frame 0)
+*SensorDock: (10x2, Swallow(UseOld) "netmon" `Exec exec xosview -title netmon +net`, Frame 0)
+*SensorDock: (10x2, Swallow(UseOld) "hdmon" `Exec exec xosview -title hdmon +disk`, Frame 0)
+*SensorDock: (2x4, Frame 0)
+*SensorDock: (20x4, Swallow(NoClose,UseOld) "stalonetray" 'Exec exec stalonetray', Frame 0)
+*SensorDock: (2x4, Frame 0)
+
+# AddToFunc StartFunction I Module FvwmButtons SensorDock
 # == End of config file ==
