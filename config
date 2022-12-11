@@ -10,19 +10,39 @@ SetEnv default_window_shade_steps 150
 SetEnv default_width 100
 SetEnv default_toolchest_width 141
 SetEnv default_desktop_size "2 1"
-SetEnv default_haiku_colorset 2
-SetEnv default_haiku_background_color #ff4444
+SetEnv default_haiku_colorset 16
 SetEnv default_haiku_buttons_width 150
 SetEnv default_haiku_buttons_height 768
 SetEnv default_haiku_buttons_font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=8"
 SetEnv default_term xfce4-terminal
 SetEnv default_rxvt rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb&
 SetEnv default_wallpaper ~/Imagens/wallpapers/current.png
-SetEnv haiku_buttons_y_position 0
+SetEnv haiku_buttons_y_position 110
 SetEnv default_font "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 Windowfont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 DefaultFont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
-# "xft:Sans:Bold:size=10:antialias=True"
+
+# == ColoSets ==
+ColorSet 66 RootTransparent, Transparent, fg White, bg #b24d7a #HaikuButtons
+# Active Window Colors.
+ColorSet 16 fg White, bg #b24d7a
+
+# Inactive Window Colors.
+ColorSet 17 fg Gainsboro, bg Gray40
+
+# Colorset for menu titles.
+ColorSet 18 fg #fff7e9, bg #5d6069
+ColorSet 19 fg #fff7e9, bg #718ba5
+
+# WindowList
+ColorSet 56 fg Black, bg White
+ColorSet 57 fg White, bg Black
+
+# Toolchest
+Colorset 11 fg Black, bg #c6c3c6
+
+#test
+Colorset 12 fg white, bg #c6c3c6, sh black, hi black, RootTransparent buffer
 
 #####
 # You can use EwmhBaseStruts to stop Maximised windows from obscuring TaskBars/ButtonBars
@@ -50,8 +70,9 @@ Style "*" Icon generic.png
 Style rxvt Icon winterm.png
 Style Terminal Icon winterm.png
 Style WinTerm Icon winterm.png
-Style "Terminal*" Icon winterm.png
+Style "Terminal *" Icon winterm.png
 Style MikMod Icon cdrec.png
+Style "Picture-in-Picture"  NoTitle, !Title, Borders 2 !Handles, !Button 1, !Button 2, !Button 4, !Button 6, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, StaysOnTop
 
 # == Geometry Window ==
 # This is the window that shows geometry when moving/resizing windows,
@@ -124,14 +145,7 @@ Style TheIconMan NoTitle, !Handles, !Borders, BorderWidth 0, WindowShade, !Butto
  Style * Colorset 17, HilightColorset 16, \
         BorderColorset 17, HilightBorderColorset 16, \
         BorderWidth 5, HandleWidth 5, \
-        # MWMBorder, DepressableBorder, \
-        MWMButtons
-
- # Active Window Colors.
- ColorSet 16 fg White, bg #b24d7a
-
- # Inactive Window Colors.
- ColorSet 17 fg Gainsboro, bg Gray40
+        # MWMBorder, DepressableBorder, MWMButtons
 
 
  # Decorate transient windows. A must for GTK apps' sub-windows.
@@ -162,10 +176,7 @@ Style TheIconMan NoTitle, !Handles, !Borders, BorderWidth 0, WindowShade, !Butto
 
  # == Menu styles ==
 
- # Colorset for menu titles.
- ColorSet 18 fg #fff7e9, bg #5d6069
- ColorSet 19 fg #fff7e9, bg #718ba5
-
+ 
  # Fast popups, filled submenu triangles, TWM-style titles.
  MenuStyle * Mwm, PopupImmediately, PopdownImmediately, PopupOffset 0 100
  MenuStyle * VerticalItemSpacing 3 3, VerticalTitleSpacing 3 3
@@ -300,7 +311,7 @@ AddToFunc StartXclock
 # == Init (startup) function ==
  AddToFunc StartFunction 
  + I Module FvwmCommandS
- + I Module FvwmPager ThePager
+ # + I Module FvwmPager ThePager
  + I Module FvwmIconMan TheIconMan
  + I Module FvwmAnimate
  + I Module FvwmEvent
@@ -310,9 +321,8 @@ AddToFunc StartXclock
  + I Module FvwmButtons HaikuButtons
  + I setWallpaper
  + I StartXclock
- + I Module FvwmBanner
- + I Module FvwmAuto FvwmAutohide -menter FuncAutoEnter
- + I Test (Init) StartHiddenConsole
+ # + I Module FvwmAuto FvwmAutohide -menter FuncAutoEnter
+ # + I Test (Init) StartHiddenConsole
 
 #####
 # Autohide console example: [4]http://dev.gentoo.org/~taviso/autohide_console.png
@@ -348,7 +358,7 @@ AddToFunc AutohideHide
 + I Schedule $0 $[w.id] Deschedule -$[w.id]
 
 # AutoHiding Console
-Style HiddenConsole Sticky, WindowListSkip, Notitle, NoHandles
+Style HiddenConsole Sticky, WindowListSkip, Notitle, NoHandles, StaysOnTop
 Style HiddenConsole WindowShadeSteps 100
 
 # == Window Handling Functions ==
@@ -438,8 +448,8 @@ AddToFunc Resize-or-Raise I Raise
 
 # Attempt 3
 # Alt-Tab like in MS Windows (-ish).
-# Key Tab A M  WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, NoDeskSort, SelectOnRelease Alt_L TabSwitchPrev
-# Key Tab  A CM  WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyListSkip, SelectOnRelease
+Key Tab A M  WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, NoDeskSort, SelectOnRelease Alt_L TabSwitchPrev
+Key Tab  A CM  WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyListSkip, SelectOnRelease
 
 # Attempt 4
 # Silent Key Tab             A  M  FuncFvwmNextWindow
@@ -768,8 +778,7 @@ AddToFunc Launcher
 # The HaikuButtons
 # This is the actual HaikuButtons definition
 ######################################
-ColorSet 10 fg White, bg #b24d7a
-Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable
+Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 2, !Button 4, !Closable, Sticky, !StickyStippledTitle, WindowListSkip, !Closable, !Iconifiable, StaysOnTop
 *HaikuButtons: Columns 23
 *HaikuButtons: Font $[default_font]
 *HaikuButtons: Colorset $[default_haiku_colorset]
@@ -975,8 +984,6 @@ AddToDecor CDEDecor
  #        MWMButtons, UseDecor CDEDecor
 
 # ==  WindowList ==
-ColorSet 56 fg Black, bg White
-ColorSet 57 fg White, bg Black
 # DestroyMenuStyle WindowList CopyMenuStyle * WindowList MenuStyle 
 MenuStyle WindowList MenuColorset 2, ActiveColorset 1, GreyedColorset 1, TitleColorset 8
 
@@ -999,35 +1006,25 @@ MenuStyle WindowList LabelWidth 30
 #
 # ==  Sensor Dock ==
 DestroyModuleConfig SensorDock: *
-*SensorDock: Geometry 120x235-5+5
-*SensorDock: Colorset 10
+*SensorDock: Geometry 120x235-5+120
+*SensorDock: Colorset 16
 *SensorDock: Rows 47
 *SensorDock: Columns 24
 *SensorDock: Font "xft:Sans:Bold:size=10:antialias=True"
 *SensorDock: Frame 0
-*SensorDock: (7x7, Icon "icons/debian.svg:28x28", Frame 0)
-*SensorDock: (17x7, Swallow DateTime 'Module FvwmScript $[FVWM_USERDIR]/scripts/DateTime', Frame 0)
-*SensorDock: (24x1, Frame 0)
-*SensorDock: (2x5, Frame 0)
-*SensorDock: (5x5, Id desk0, Title "0", Action (Mouse 1) GotoDesk 0 0, Colorset 11, ActiveColorset 12, Frame 0)
-*SensorDock: (5x5, Id desk1, Title "1", Action (Mouse 1) GotoDesk 0 1, Colorset 10, ActiveColorset 12, Frame 0)
-*SensorDock: (5x5, Id desk2, Title "2", Action (Mouse 1) GotoDesk 0 2, Colorset 10, ActiveColorset 12, Frame 0)
-*SensorDock: (5x5, Id desk3, Title "3", Action (Mouse 1) GotoDesk 0 3, Colorset 10, ActiveColorset 12, Frame 0)
-*SensorDock: (2x5, Frame 0)
-*SensorDock: (2x12, Frame 0)
-*SensorDock: (20x12, Swallow FvwmPager 'Module FvwmPager *', Frame 0)
-*SensorDock: (2x12, Frame 0)
-*SensorDock: (12x1, Frame 0)
-*SensorDock: (12x18, Swallow Sensors 'Module FvwmScript $[FVWM_USERDIR]/scripts/Sensors', Frame 2)
-*SensorDock: (1x16, Frame 0)
+# *SensorDock: (7x7, Icon "icons/debian.svg:28x28", Frame 0)
+# *SensorDock: (17x7, Swallow DateTime 'Module FvwmScript $[FVWM_USERDIR]/scripts/DateTime', Frame 0)
+# *SensorDock: (12x18, Swallow Sensors 'Module FvwmScript $[FVWM_USERDIR]/scripts/Sensors', Frame 2)
+*SensorDock: (1x24, Frame 0)
 *SensorDock: (10x10, Swallow(UseOld) "cpumon" `Exec exec xosview -title cpumon +cpu`, Frame 0)
-*SensorDock: (1x16, Frame 0)
+*SensorDock: (1x17, Frame 0)
 *SensorDock: (10x2, Swallow(UseOld) "memmon" `Exec exec xosview -title memmon +mem`, Frame 0)
 *SensorDock: (10x2, Swallow(UseOld) "netmon" `Exec exec xosview -title netmon +net`, Frame 0)
 *SensorDock: (10x2, Swallow(UseOld) "hdmon" `Exec exec xosview -title hdmon +disk`, Frame 0)
+*SensorDock: (10x2, Swallow(UseOld) "batmon" `Exec exec xosview -title batmon +bat`, Frame 0)
 *SensorDock: (2x4, Frame 0)
 *SensorDock: (20x4, Swallow(NoClose,UseOld) "stalonetray" 'Exec exec stalonetray', Frame 0)
 *SensorDock: (2x4, Frame 0)
 
-# AddToFunc StartFunction I Module FvwmButtons SensorDock
+AddToFunc StartFunction I Module FvwmButtons SensorDock
 # == End of config file ==
