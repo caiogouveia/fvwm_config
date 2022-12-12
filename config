@@ -1,6 +1,7 @@
 ##########################################################
 # Fvwm config
 ##########################################################
+Piperead `echo SetEnv HOSTNAME $(hostname)`
 SetEnv default_window_title_placement TitleAtTop
 SetEnv default_window_title_aligment
 SetEnv default_icon_size_width 90
@@ -13,11 +14,11 @@ SetEnv default_desktop_size "2 1"
 SetEnv default_haiku_colorset 16
 SetEnv default_haiku_buttons_width 150
 SetEnv default_haiku_buttons_height 768
+SetEnv haiku_buttons_y_position 1
 SetEnv default_haiku_buttons_font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=8"
 SetEnv default_term xfce4-terminal
 SetEnv default_rxvt rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb&
 SetEnv default_wallpaper ~/Imagens/wallpapers/current.png
-SetEnv haiku_buttons_y_position 110
 SetEnv default_font "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 Windowfont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 DefaultFont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
@@ -106,7 +107,7 @@ Style ThePager Title, !Handles, BorderWidth 2, WindowShade, !Button 1, !Button 2
  *ThePager: hilight #dc143c
  *ThePager: font none
  *ThePager: Geometry 119x70-0+45
- *ThePager: label 0     "nezu"
+ *ThePager: label 0 "nezu"
  # *ThePager: windowlabelformat ""
  *ThePager: SolidSeparators
 
@@ -320,7 +321,7 @@ AddToFunc StartXclock
  + I Module FvwmButtons Toolchest
  + I Module FvwmButtons HaikuButtons
  + I setWallpaper
- + I StartXclock
+ # + I StartXclock
  # + I Module FvwmAuto FvwmAutohide -menter FuncAutoEnter
  # + I Test (Init) StartHiddenConsole
 
@@ -787,8 +788,8 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
 *HaikuButtons: Rows 80
 *HaikuButtons: Geometry $[default_haiku_buttons_width]x$[default_haiku_buttons_height]-0+$[haiku_buttons_y_position]
 *HaikuButtons: (Size 1x80, Back $[default_haiku_background_color], Frame 1, Action (Mouse 1) `Nop`)
-*HaikuButtons: (Title (Side) ".: NEZU :.", Center, Back navy, Size 22x3, Action (Mouse 1) `Nop`)
-# *HaikuButtons: (Size 7x7, Icon "icons/debian.svg:28x28")
+# *HaikuButtons: (Title (Side) $[HOSTNAME], Size 22x2, Action (Mouse 1) `Nop`)
+*HaikuButtons: (22x7, Icon "kaneda.png", Action(Mouse 1) "Exec exec $[default_term]")
 *HaikuButtons: (Size 22x3, Back #dedbde, Swallow DateTime 'Module FvwmScript FvwmScript-DateTime', Frame 2)
 *HaikuButtons: (Title (Side) " Terminal", Left, Back #dedbde, Icon computer_x11.png, \
     Size 22x2, Action (Mouse 1) `Exec exec rxvt`)
