@@ -18,7 +18,7 @@ SetEnv haiku_buttons_y_position 1
 SetEnv default_haiku_buttons_font "Shadow=1 1 SE:xft:Bitstream Vera Sans Mono:style=Roman:size=8"
 SetEnv default_term xfce4-terminal
 SetEnv default_rxvt rxvt -st -title WinTerm -cr palegoldenrod -bg grey5 -fg linen -sb&
-SetEnv default_wallpaper ~/Imagens/wallpapers/current.png
+SetEnv default_wallpaper ~/Imagens/Wallpapers/current.jpeg
 SetEnv default_font "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 Windowfont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
 DefaultFont "Shadow=1 1 SE:xft:Sans:Italic:Bold:size=10:antialias=True"
@@ -799,6 +799,8 @@ Style HaikuButtons NoTitle, !Handles, !Borders, WindowShade, !Button 1, !Button 
     Size 22x2, Action (Mouse 1) `Exec exec rxvt -e vim -geom 115x46`)
 *HaikuButtons: (Title (Side) " MS Edge", Left, Back #dedbde, Icon opera.png, \
     Size 22x2, Action (Mouse 1) `Exec exec microsoft-edge`)
+*HaikuButtons: (Title (Side) " Google Chrome", Left, Back #dedbde, Icon opera.png, \
+    Size 22x2, Action (Mouse 1) `Exec exec google-chrome`)
 *HaikuButtons: (Title (Side) " Gimp", Left, Back #dedbde, Icon graphics_paint_edit.png, \
     Size 22x2, Action (Mouse 1) `Exec exec gimp`)
 *HaikuButtons: (Title (Side) " Libre Calc", Left, Back #dedbde, Icon document_letter_word-processor.png, \
